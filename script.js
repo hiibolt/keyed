@@ -177,7 +177,8 @@ function preload(){
 
 function setup() {
 	createCanvas(800, 600);
-	
+
+	//For some odd reason, a variable cannot be initialized to a color before setup.
 	coloring.primary = color(55, 62, 152);
 	coloring.secondary = color(254,227,110);
 	coloring.tertiary = color(241, 103, 117);
@@ -205,6 +206,8 @@ function draw() {
 			taikoEnd(taiko);
 			break;
 	}
+
+	/** Curtain Handling, do not touch **/
 	if(curtainmode == "raise"){
 		curtain = constrain(curtain + (100 - curtain) / 15, 0, 100);
 		if(curtain > 99.8 && after != 0){

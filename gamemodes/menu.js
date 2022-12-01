@@ -1,4 +1,3 @@
-
 //Run at start
 function menuSetup(menu) {
 }
