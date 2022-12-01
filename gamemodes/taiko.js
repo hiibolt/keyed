@@ -3,33 +3,6 @@
 function lerpN(_t, _d) {
 	return (_t > _d) ? _d + constrain((_t - _d) / 50, 0.01, Infinity) : (_t < _d) ? _d - constrain((_d - _t) / 50, 0.01, Infinity) : _d;
 }
-//Button function that should really be a class but fuck you i guess
-function Button(x, y, t, f) {
-	textSize(20);
-	textFont(taiko.coloring.primaryFont);
-
-	if (mouseX > x - (textWidth(t) / 2) - 10 && mouseX < x - (textWidth(t) / 2) - 10 + textWidth(t) + 20 && mouseY > y && mouseY < y + 65) {
-		fill(taiko.coloring.secondary);
-		stroke(0, 0, 0, 75);
-		if (mouseIsPressed) {
-			f();
-		}
-	} else {
-		fill(taiko.coloring.secondary);
-		stroke(lerpColor(taiko.coloring.secondary, color(0), 0.10));
-	}
-
-	strokeWeight(4);
-	rect(x - (textWidth(t) / 2) - 10, y, textWidth(t) + 20, 65, 5);
-
-	fill(0);
-	stroke(0);
-	strokeWeight(0);
-	textAlign(CENTER);
-	text(t, x, y + 38);
-
-	return textWidth(t) + 20;
-}
 //Main note class
 class taikoNote {
 	constructor(setKey, approachRate, timeAt, ind, taiko) {
@@ -149,41 +122,23 @@ function taikoSetup(taiko, chars, bpm) {
 }
 //Taiko endpage
 function taikoEnd(taiko) {
-	if (!taiko.player.swapping) {
-		taiko.player.curtain = constrain(taiko.player.curtain + (100 - taiko.player.curtain) / 5, 0, 100);
-	} else {
-		if (taiko.player.curtain > 0.2) {
-			taiko.player.curtain = constrain(taiko.player.curtain - (taiko.player.curtain) / 5, 0, 100);
-		} else {
-			taiko.player.swapping = false;
-			switch (taiko.player.swappingto) {
-				case "menu":
-					page = "menu";
-					break;
-				case "retry":
-					taikoSetup(taiko, lastchars, lastbpm);
-					page = "taiko";
-					break;
-			}
-		}
-	}
 	if (taiko.player.health > 0) {
 		background(255,0,0)
 		fill(255);
 		text("hey you aren't supposed to be here",400,200);
 	} else {
-		background(taiko.coloring.primary);
+		background(coloring.primary);
 		//cos(frameCount / 25) * 0.15
 
-		fill(taiko.coloring.secondary);
-		stroke(lerpColor(taiko.coloring.secondary, color(0), 0.2));
+		fill(coloring.secondary);
+		stroke(lerpColor(coloring.secondary, color(0), 0.2));
 		strokeWeight(5);
 		rect(50, 0, 700, 350);
 
-		fill(lerpColor(taiko.coloring.quaternary, color(255, 0, 0), cos(frameCount / 15) * 0.50));
+		fill(lerpColor(coloring.quaternary, color(255, 0, 0), cos(frameCount / 15) * 0.50));
 		noStroke();
 		textSize(50);
-		textFont(taiko.coloring.secondaryFont);
+		textFont(coloring.secondaryFont);
 		textAlign(CENTER);
 		text("Failed!", 400, 65);
 
@@ -192,11 +147,11 @@ function taikoEnd(taiko) {
 		strokeWeight(5);
 		rect(160, 100, 500, 230);
 
-		fill(taiko.coloring.quaternary);
+		fill(coloring.quaternary);
 		noStroke();
 		textSize(25);
 		textAlign(LEFT);
-		textFont(taiko.coloring.primaryFont);
+		textFont(coloring.primaryFont);
 		let spacing = 33;
 		text("Score: " + taiko.player.score.raw, 200, 165);
 		text("Time Left: " + null, 200, 165 + spacing);
@@ -207,29 +162,27 @@ function taikoEnd(taiko) {
 		translate(540, 270);
 		rotate(10 * (Math.PI / 180));
 		textAlign(CENTER);
-		textFont(taiko.coloring.secondaryFont);
+		textFont(coloring.secondaryFont);
 		textSize(180);
 		text('A', 0, 0);
 		pop();
 	}
-	Button(200, 400, "Menu", () => { taiko.player.swapping = true; taiko.player.swappingto = "menu" });
-	Button(600, 400, "Retry", () => { taiko.player.swapping = true; taiko.player.swappingto = "retry" });
-	fill(0);
-	rect(0, 0, 800, 600 * (1 - (taiko.player.curtain / 100)));
+	Button(200, 400, "Menu", () => {lowerCurtain(()=>{page = "menu";})});
+	Button(600, 400, "Retry", () => {lowerCurtain(()=>{taikoSetup(taiko, lastchars, lastbpm);page = "taiko"})});
 }
 //Run at draw
 function taikoDraw(taiko) {
 	background(255 + cos(frameCount / 50) * 50, 255 + cos(frameCount / 40) * 50, 255 + cos(frameCount / 30) * 50);
 	if (taiko.player.health <= 0) {
 		//wrap it up folks this guy sucks
-		taiko.player.curtain = constrain(taiko.player.curtain - (taiko.player.curtain) / 15, 0, 100);
-		if (taiko.player.curtain < 0.2) {
+		lowerCurtain(()=>{
 			page = "taikoend";
-		}
+		});
 	} else {
-		taiko.time.set = Date.now() - taiko.time.offset;
-		taiko.player.curtain = constrain(taiko.player.curtain + (100 - taiko.player.curtain) / 15, 0, 100);
-		taiko.player.health = constrain(taiko.player.health + 0.1, -100, 100);
+		if(!lockinput){
+			taiko.time.set = Date.now() - taiko.time.offset;
+			taiko.player.health = constrain(taiko.player.health + 0.1, -100, 100);
+		}
 	}
 
 	for (var i = 0; i < taiko.notes.length; i++) {
@@ -289,6 +242,4 @@ function taikoDraw(taiko) {
 
 	line(50, 75 + 250, 50, 175 + 250); // special
 
-	fill(0);
-	rect(0, 0, 800, 600 * (1 - (taiko.player.curtain / 100)));
 }

@@ -5,18 +5,61 @@
 	   - "learn"     **/
 let page = "menu";
 
+/** Global Curtain Transition **/
+let lockinput = false;
+let curtainmode = "raise";
+let curtain = 0;
+let after = () => {};
+function lowerCurtain(f){
+	lockinput = true;
+	curtainmode = "lower";
+	after = f;
+}
+
+/** Button Function **/
+function Button(x, y, t, f) {
+	textSize(20);
+	textFont(coloring.primaryFont);
+	
+	if (mouseX > x - (textWidth(t) / 2) - 10 && mouseX < x - (textWidth(t) / 2) - 10 + textWidth(t) + 20 && mouseY > y && mouseY < y + 65) {
+		fill(coloring.secondary);
+		stroke(0, 0, 0, 75);
+		if(mouseIsPressed && !lockinput){
+			f();
+		}
+	} else {
+		fill(coloring.secondary);
+		stroke(lerpColor(coloring.secondary, color(0), 0.10));
+	}
+
+	strokeWeight(4);
+	rect(x - (textWidth(t) / 2) - 10, y, textWidth(t) + 20, 65, 5);
+
+	fill(0);
+	stroke(0);
+	strokeWeight(0);
+	textAlign(CENTER);
+	text(t, x, y + 38);
+	
+	return textWidth(t) + 20;
+}
+
 /** Update Keys **/
 function keyPressed() {
-	run.keys[key] = true;
-	menu.keys[key] = true;
-	taiko.keys[key] = true;
-	learn.keys[learn] = true;
+	if(!lockinput){
+		run.keys[key] = true;
+		menu.keys[key] = true;
+		taiko.keys[key] = true;
+		learn.keys[learn] = true;
+	}
 }
 function keyReleased() {
-	run.keys[key] = false;
-	menu.keys[key] = false;
-	taiko.keys[key] = false;
-	learn.keys[learn] = false;
+	if(!lockinput){
+		run.keys[key] = false;
+		menu.keys[key] = false;
+		taiko.keys[key] = false;
+		learn.keys[learn] = false;
+	}
 }
 
 /** Graphics **/
@@ -38,7 +81,6 @@ const menu = {
 	keys: [],
 	section: "Vowels 1",
 	inSection: false,
-	swapping: false,
 
 	sections: {
 		"Vowels 1": [
@@ -82,9 +124,7 @@ const menu = {
 			
 		],
 	},
-
-	curtain: 0,
-
+	
 	coloring: null,
 };
 const taiko = { 
@@ -109,9 +149,6 @@ const taiko = {
 			text: "nothing",
 			opacity: 0,
 		},
-		curtain: 0,
-		swapping: false,
-		swappingto: "menu",
 	},
 	notes: [],
 	mods: {
@@ -121,18 +158,12 @@ const taiko = {
 		bpm: 120,
 		speed: 5,
 	},
-
-	coloring: null,
 };
 const run = {
 	keys: [],
-
-	coloring: null,
 };
 const learn = {
 	keys: [],
-
-	coloring: null,
 };
 
 /**
@@ -151,11 +182,6 @@ function setup() {
 	coloring.secondary = color(254,227,110);
 	coloring.tertiary = color(241, 103, 117);
 	coloring.quaternary = color(42, 42, 42);
-
-	run.coloring = coloring;
-	menu.coloring = coloring; 
-	taiko.coloring = coloring;
-	learn.coloring = coloring;
 }
 
 function draw() {
@@ -179,4 +205,22 @@ function draw() {
 			taikoEnd(taiko);
 			break;
 	}
+	if(curtainmode == "raise"){
+		curtain = constrain(curtain + (100 - curtain) / 15, 0, 100);
+		if(curtain > 99.8 && after != 0){
+			after();
+			after = 0;
+			lockinput = false;
+		}
+	}else{
+		curtain = constrain(curtain - (curtain) / 15, 0, 100);
+		if(curtain < 0.2){
+			after();
+			after = 0;
+			curtainmode = "raise";
+			lockinput = false;
+		}
+	}
+	fill(0);
+	rect(0, 0, 800, 600 * (1 - (curtain / 100)));
 }
