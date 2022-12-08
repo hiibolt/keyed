@@ -12,12 +12,18 @@
 		  * "taikoend"
      - "run"
 	   - "learn"     **/
-let page = "mods";
+let page = "menu";
 
 /** Letter Sets **/
 const all = "abcdefghijklmnopqrstuvwxyz".split('');
 const caps = "abcdefghijklmnopqrstuvwxyz".toUpperCase().split('');
 const special = "0123456789[]{};:,.?'!&".split('');
+const system = {
+	w: "notyetassigned",
+	h: "notyetassigned",
+	scale: "notyetassigned",
+	altscale: "notyetassigned",
+}
 
 /** User Information **/
 const user = {
@@ -310,7 +316,12 @@ function preload(){
 }
 
 function setup() {
-	createCanvas(800, 600);
+	createCanvas(windowWidth, windowHeight);
+
+	system.w = windowWidth;
+	system.h = windowHeight
+	system.scale = windowWidth / 800;
+	system.altscale = windowHeight / 600;
 
 	coloring.primary = color(55, 62, 152);
 	coloring.secondary = color(254,227,110);

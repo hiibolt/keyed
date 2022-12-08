@@ -13,11 +13,13 @@ function lowerCurtain(f){
 /** Button Function **/
 //x: x-coord, y: y-coord, t: text, f: excuted after a click ()=>{do this;}
 function Button(x, y, t, f, dead = false) {
-	textSize(20);
+	let lockedscale = constrain(system.scale,0,1.5);
+	let lockedaltscale = constrain(system.altscale,0,1.5);
+	textSize(20 * lockedscale);
 	textFont(coloring.primaryFont);
 
 	if(dead == false){
-		if (mouseX > x - (textWidth(t) / 2) - 10 && mouseX < x - (textWidth(t) / 2) - 10 + textWidth(t) + 20 && mouseY > y && mouseY < y + 65) {
+		if (mouseX > x - (textWidth(t) / 2) - 10 * lockedscale && mouseX < x - (textWidth(t) / 2) - 10 * lockedscale + textWidth(t) + 20 * lockedscale && mouseY > y && mouseY < y + 65 * lockedaltscale) {
 			fill(coloring.secondary);
 			stroke(0, 0, 0, 75);
 			if(mouseIsPressed && !lockinput){
@@ -32,14 +34,14 @@ function Button(x, y, t, f, dead = false) {
 		stroke(lerpColor(coloring.quaternary, color(0), 0.10));
 	}
 
-	strokeWeight(4);
-	rect(x - (textWidth(t) / 2) - 10, y, textWidth(t) + 20, 65, 5);
+	strokeWeight(4 * lockedscale);
+	rect(x - (textWidth(t) / 2) - 10 * lockedscale, y, textWidth(t) + 20 * lockedscale, 65 * lockedaltscale, 5);
 
-	fill(0);
+	fill(coloring.quaternary);
 	stroke(0);
 	strokeWeight(0);
 	textAlign(CENTER);
-	text(t, x, y + 38);
+	text(t, x, y + 36 * lockedscale);
 	
 	return textWidth(t) + 20;
 }
@@ -88,7 +90,7 @@ function drawCurtain(){
 		}
 	}
 	fill(0);
-	rect(0, 0, 800, 600 * (1 - (curtain / 100)));
+	rect(0, 0, 800 * system.scale, 600 * (1 - (curtain / 100)) * system.altscale);
 }
 function userCompleted(item){
 	user.completed.push(item);
