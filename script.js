@@ -334,7 +334,7 @@ function setup() {
 }
 
 function draw() {
-	tmouseX = (mouseX / (windowHeight / 600 * 1.1)) - (windowWidth - (800 * windowHeight / 600 * 1.1)) / 2;
+	tmouseX = ((mouseX - (windowWidth - (800 * windowHeight / 600 * 1.1)) / 2) / (windowHeight / 600 * 1.1));
 	tmouseY = mouseY / (windowHeight / 600);
 	if(windowWidth < windowHeight * 1.5){
 		background(255,0,0);
