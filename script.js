@@ -19,6 +19,13 @@ const all = "abcdefghijklmnopqrstuvwxyz".split('');
 const caps = "abcdefghijklmnopqrstuvwxyz".toUpperCase().split('');
 const special = "0123456789[]{};:,.?'!&".split('');
 
+/** Mouse **/
+let tmouseX = 0;
+let tmouseY = 0;
+
+/** Background **/
+const dots = [];
+
 /** User Information **/
 const user = {
 	username: "?",
@@ -310,7 +317,7 @@ function preload(){
 }
 
 function setup() {
-	createCanvas(800, 600);
+	createCanvas(windowWidth, windowHeight);
 
 	coloring.primary = color(55, 62, 152);
 	coloring.secondary = color(254,227,110);
@@ -320,11 +327,27 @@ function setup() {
 	menuSetup(menu);
 	runSetup();
 	learnSetup();
+
+	for (let i = 0; i < 200; i++) {
+		dots.push([random(0, windowWidth), random(0, windowHeight), random(0, 100)]);
+	}
 }
 
 function draw() {
-	switch (page) {
-		case "menu":
+	tmouseX = (mouseX / (windowHeight / 600 * 1.1)) - (windowWidth - (800 * windowHeight / 600 * 1.1)) / 2;
+	tmouseY = mouseY / (windowHeight / 600);
+	if(windowWidth < windowHeight * 1.5){
+		background(255,0,0);
+		textAlign(CENTER);
+		textSize(35);
+		text("Bad resolution\nSwitch to a less vertically stretched resolution",windowWidth / 2,windowHeight / 2);
+		return;
+	}
+	push();
+		translate( (windowWidth - (800 * windowHeight / 600 * 1.1)) / 2, 0);
+		scale(windowHeight / 600 * 1.1, windowHeight / 600);
+		switch (page) {
+		case "menu": 
 			menuDraw(menu,taiko,run,learn);
 			break;
 		case "train":
@@ -355,6 +378,6 @@ function draw() {
 			taikoEnd(taiko);
 			break;
 	}
-
+	pop();
 	drawCurtain();
 }

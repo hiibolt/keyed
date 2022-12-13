@@ -1,13 +1,10 @@
 //Run at start
 function menuSetup(menu) {
-	menu.nodes = [];
-	for (let i = 0; i < 100; i++) {
-		menu.nodes.push([random(0, 800), random(100, 600), random(0, 100)]);
-	}
 }
 //Run at draw
 function menuDraw(menu, taiko, run, learn) {
 	background(coloring.primary);
+	renderDots();
 	
 	//Line below buttons and logo
 	stroke(255);
@@ -31,20 +28,6 @@ function menuDraw(menu, taiko, run, learn) {
 	fallButton(400, 55, "train", () => { lowerCurtain(() => { page = "train" }) });
 	fallButton(500, 55, "mods", () => { lowerCurtain(() => { page = "mods" }) });
 	fallButton(600, 55, "profile", () => { lowerCurtain(() => { page = "profile" }) });
-	
-	//Node animation
-	menu.nodes.forEach((i, n) => {
-		if (i[0] < 0 || i[0] > 800 || i[1] < 100 || i[1] > 600) {
-			i[0] = random(0, 800);
-			i[1] = random(100, 600);
-			i[2] = random(0, 100);
-		}
-		stroke(255, 255, 255, cos(Date.now() * n / 100000) * 125 + 50);
-		strokeWeight(5);
-		point(i[0], i[1]);
-		i[0] += cos(i[2]) / constrain(dist(i[0], i[1], mouseX, mouseY), 0.01, Infinity) * 100;
-		i[1] += sin(i[2]) / constrain(dist(i[0], i[1], mouseX, mouseY), 0.01, Infinity) * 100;
-	});
 
 	if (!menu.inSection) {
 		fill(255);

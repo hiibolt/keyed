@@ -17,7 +17,7 @@ function Button(x, y, t, f, dead = false) {
 	textFont(coloring.primaryFont);
 
 	if(dead == false){
-		if (mouseX > x - (textWidth(t) / 2) - 10 && mouseX < x - (textWidth(t) / 2) - 10 + textWidth(t) + 20 && mouseY > y && mouseY < y + 65) {
+		if (tmouseX > x - (textWidth(t) / 2) - 10 && tmouseX < x - (textWidth(t) / 2) - 10 + textWidth(t) + 20 && tmouseY > y && tmouseY < y + 65) {
 			fill(coloring.secondary);
 			stroke(0, 0, 0, 75);
 			if(mouseIsPressed && !lockinput){
@@ -48,8 +48,8 @@ function fallButton(x, y, t, f) {
 	textFont(coloring.primaryFont);
 	noStroke();
 
-	if (mouseX > x - (textWidth(t) / 2) - 10 && mouseX < x - (textWidth(t) / 2) - 10 + textWidth(t) + 20 && mouseY > y - 36 && mouseY < y + 65 - 36) {
-		fill(125,125,125,185 - dist(mouseX,mouseY, x, y) * 5);
+	if (tmouseX > x - (textWidth(t) / 2) - 10 && tmouseX < x - (textWidth(t) / 2) - 10 + textWidth(t) + 20 && tmouseY > y - 36 && tmouseY < y + 65 - 36) {
+		fill(125,125,125,185 - dist(tmouseX,tmouseY, x, y) * 5);
 		if(mouseIsPressed && !lockinput){
 			f();
 		}
@@ -88,7 +88,23 @@ function drawCurtain(){
 		}
 	}
 	fill(0);
-	rect(0, 0, 800, 600 * (1 - (curtain / 100)));
+	rect(0, 0, windowWidth, windowHeight * (1 - (curtain / 100)));
+}
+//Render dots
+function renderDots(){
+	//Node animation
+	dots.forEach((i, n) => {
+		if (i[0] < 0 || i[0] > windowWidth || i[1] < 100 * windowHeight / 600 || i[1] > windowHeight) {
+			i[0] = random(0, windowWidth);
+			i[1] = random(100 * windowHeight / 600, windowHeight);
+			i[2] = random(0, 100);
+		}
+		stroke(255, 255, 255, cos(Date.now() * n / 100000) * 125 + 50);
+		strokeWeight(5);
+		point(i[0] - (windowWidth - (800 * windowHeight / 600 * 1.1)) / 2, i[1]);
+		i[0] += cos(i[2]) / constrain(dist(i[0], i[1], mouseX, mouseY), 0.01, Infinity) * 100;
+		i[1] += sin(i[2]) / constrain(dist(i[0], i[1], mouseX, mouseY), 0.01, Infinity) * 100;
+	});
 }
 function userCompleted(item){
 	user.completed.push(item);
